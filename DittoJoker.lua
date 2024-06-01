@@ -31,7 +31,7 @@ SMODS.Joker{
     cost = 7,
     config = {
 		extra = {
-			increment = 0.3, current = 1
+			increment = 0.3, current = 1.3
 		}
 	},
     loc_txt = {
@@ -39,22 +39,25 @@ SMODS.Joker{
         text = {
             "Gains {X:mult,C:white}X#1# {} Mult whenever",
 			"a {C:attention}playing card{} is copied",
-			"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive}){}"
+			"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult){}"
 			
         }
     },
 	loc_vars = function(self, info_queue, card)
         return {vars = {card.ability.extra.increment, card.ability.extra.current}}
 	end,
-    calculate = function(card, context)
-        if SMODS.end_calculate_context(context) then
-            return {
-                mult_mod = card.ability.mult,
-                colour = G.C.RED,
-                message = "Ditto"
-            }
-        end
-    end,
+	calculate = function(self, card, context)
+		if context.cardarea == G.jokers and context.joker_main then
+			return {
+				Xmult_mod = card.ability.extra.current,
+				message = localize {
+					type = 'variable',
+					key = 'a_xmult',
+					vars = {card.ability.extra.current}
+				},
+			}
+		end
+	end,
     atlas = "ditto"
 }
 
