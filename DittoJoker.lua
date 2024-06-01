@@ -31,7 +31,7 @@ SMODS.Joker{
     cost = 7,
     config = {
 		extra = {
-			increment = 0.3, current = 1.3
+			increment = 0.3, current = 1
 		}
 	},
     loc_txt = {
@@ -47,7 +47,7 @@ SMODS.Joker{
         return {vars = {card.ability.extra.increment, card.ability.extra.current}}
 	end,
 	calculate = function(self, card, context)
-		if context.cardarea == G.jokers and context.joker_main then
+		if context.cardarea == G.jokers and context.joker_main and card.ability.extra.current > 1 then
 			return {
 				Xmult_mod = card.ability.extra.current,
 				message = localize {
@@ -56,6 +56,14 @@ SMODS.Joker{
 					vars = {card.ability.extra.current}
 				},
 			}
+		end
+		if context.using_consumeable then
+			if context.consumeable.ability.name == "Death" then
+				card.ability.extra.current = card.ability.extra.current + card.ability.extra.increment
+				card_eval_status_text(card, 'extra', nil, nil, nil, 
+					{message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.current}}}
+				)
+			end
 		end
 	end,
     atlas = "ditto"
