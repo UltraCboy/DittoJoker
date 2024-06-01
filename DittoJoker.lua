@@ -11,8 +11,8 @@
 
 
 SMODS.Atlas{
-    key = "ditto_test",
-    path = "ditto_test.png",
+    key = "ditto",
+    path = "ditto.png",
     px = 71,
     py = 95
 }
@@ -24,15 +24,28 @@ SMODS.Joker{
     name = "Ditto",
     rarity = 2,
     discovered = true,
+	blueprint_compat = true,
+	perishable_compat = false,
+	eternal_compat = true,
     pos = {x = 0, y = 0},
-    cost = 4,
-    config = {mult = 20},
+    cost = 7,
+    config = {
+		extra = {
+			increment = 0.3, current = 1
+		}
+	},
     loc_txt = {
         name = "Ditto",
         text = {
-            "TODO: write description",
+            "Gains {X:mult,C:white}X#1# {} Mult whenever",
+			"a {C:attention}playing card{} is copied",
+			"{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive}){}"
+			
         }
     },
+	loc_vars = function(self, info_queue, card)
+        return {vars = {card.ability.extra.increment, card.ability.extra.current}}
+	end,
     calculate = function(card, context)
         if SMODS.end_calculate_context(context) then
             return {
@@ -42,7 +55,7 @@ SMODS.Joker{
             }
         end
     end,
-    atlas = "ditto_test"
+    atlas = "ditto"
 }
 
 ----------------------------------------------
