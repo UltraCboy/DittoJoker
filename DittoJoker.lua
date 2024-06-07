@@ -70,8 +70,10 @@ SMODS.Joker{
 			if context.before and not context.blueprint then
 				if G.GAME.current_round.hands_played == 0 and #context.full_hand == 1 then
 					local inc = 0
+					local c = 0
 					local function foo(i)
-						if i > #G.jokers.cards then return 0
+						c = c + 1
+						if i > #G.jokers.cards or c > #G.jokers.cards then return 0
 						elseif G.jokers.cards[i].ability.name == "DNA" then return 1
 						elseif G.jokers.cards[i].ability.name == "Blueprint" then return foo(i + 1)
 						elseif G.jokers.cards[i].ability.name == "Brainstorm" then return foo(1)
@@ -79,6 +81,7 @@ SMODS.Joker{
 						end
 					end
 					for i = 1, #G.jokers.cards do
+						c = 0
 						inc = inc + foo(i)
 					end
 					if inc > 0 then
