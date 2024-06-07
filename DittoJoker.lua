@@ -31,7 +31,7 @@ SMODS.Joker{
     cost = 7,
     config = {
 		extra = {
-			increment = 0.3, current = 1, dna_maybe = false, spawn_goodies = false
+			increment = 0.3, current = 1, spawn_goodies = true
 		}
 	},
     loc_txt = {
@@ -47,32 +47,8 @@ SMODS.Joker{
         return {vars = {card.ability.extra.increment, card.ability.extra.current}}
 	end,
 	calculate = function(self, card, context)
-		-- Scoring
-		if context.cardarea == G.jokers then
-			card.ability.extra.dna_maybe = true
-			if context.joker_main then
-				card.ability.extra.dna_maybe = false
-				if card.ability.extra.current > 1 then
-					return {
-						Xmult_mod = card.ability.extra.current,
-						message = localize {
-							type = 'variable',
-							key = 'a_xmult',
-							vars = {card.ability.extra.current}
-						},
-					}
-				end
-			end
-		end
-		-- Using DNA
-		if context.playing_card_added and not context.blueprint and not self.getting_sliced 
-			and G.GAME.current_round.hands_played == 0 and card.ability.extra.dna_maybe
-			and context.cards and context.cards[1] then
-			card.ability.extra.current = card.ability.extra.current + #context.cards * card.ability.extra.increment
-			card_eval_status_text(card, 'extra', nil, nil, nil, 
-				{message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.current}}}
-			)
-		end
+		-- Do nothing if debuffed
+		if self.debuff then return nil end
 		if context.using_consumeable and not context.blueprint then
 			-- Using Death
 			if context.consumeable.ability.name == "Death" then
@@ -87,6 +63,44 @@ SMODS.Joker{
 				card_eval_status_text(card, 'extra', nil, nil, nil, 
 					{message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.current}}}
 				)
+			end
+		end
+		if context.cardarea == G.jokers then
+			-- Using DNA
+			if context.before and not context.blueprint then
+				if G.GAME.current_round.hands_played == 0 and #context.full_hand == 1 then
+					local inc = 0
+					local function foo(i)
+						if i > #G.jokers.cards then return 0
+						elseif G.jokers.cards[i].ability.name == "DNA" then return 1
+						elseif G.jokers.cards[i].ability.name == "Blueprint" then return foo(i + 1)
+						elseif G.jokers.cards[i].ability.name == "Brainstorm" then return foo(1)
+						else return 0
+						end
+					end
+					for i = 1, #G.jokers.cards do
+						inc = inc + foo(i)
+					end
+					if inc > 0 then
+						card.ability.extra.current = card.ability.extra.current + inc * card.ability.extra.increment
+						card_eval_status_text(card, 'extra', nil, nil, nil, 
+							{message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.current}}}
+						)
+					end
+				end
+			end
+			-- Scoring
+			if context.joker_main then
+				if card.ability.extra.current > 1 then
+					return {
+						Xmult_mod = card.ability.extra.current,
+						message = localize {
+							type = 'variable',
+							key = 'a_xmult',
+							vars = {card.ability.extra.current}
+						},
+					}
+				end
 			end
 		end
 		-- Creating things on shops ending - TESTING ONLY
@@ -119,13 +133,14 @@ SMODS.Joker{
 			G.GAME.joker_buffer = G.GAME.joker_buffer + 1
             G.E_MANAGER:add_event(Event({
                 func = function() 
-                    local card = create_card('Joker', G.jokers, nil, 0, nil, nil, 'j_dna', 'rif')
+                    local card = create_card('Joker', G.jokers, nil, 0, nil, nil, 'j_dna', 'dit')
                     card:add_to_deck()
                     G.jokers:emplace(card)
                     card:start_materialize()
                     G.GAME.joker_buffer = 0
                     return true
                 end}))
+			-- No more goodies
 			card.ability.extra.spawn_goodies = false
 		end
 	end,
