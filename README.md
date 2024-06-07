@@ -2,7 +2,7 @@
 
 ![Ditto Joker Preview](https://github.com/UltraCboy/DittoJoker/blob/main/preview.png?raw=true)
 
-This is a modded Joker for Balatro, a roguelike deckbuilder game. This Joker multiplies the Mult by a factor that increased with every playing card copied or duplicated.
+This is a modded Joker for Balatro, a roguelike deckbuilder game. This Joker multiplies the Mult by a factor that increases with every playing card copied or duplicated.
 
 While I did keep in mind some design philosophies in order to make Ditto "fit in" and feel balanced, I mainly made this mod for fun.
 

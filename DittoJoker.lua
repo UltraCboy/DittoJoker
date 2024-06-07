@@ -31,7 +31,7 @@ SMODS.Joker{
     cost = 7,
     config = {
 		extra = {
-			increment = 0.3, current = 1, spawn_goodies = true
+			increment = 0.3, current = 1, spawn_goodies = false
 		}
 	},
     loc_txt = {
