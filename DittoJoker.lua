@@ -74,6 +74,7 @@ SMODS.Joker{
 					local function foo(i)
 						c = c + 1
 						if i > #G.jokers.cards or c > #G.jokers.cards then return 0
+						elseif G.jokers.cards[i].debuff then return 0
 						elseif G.jokers.cards[i].ability.name == "DNA" then return 1
 						elseif G.jokers.cards[i].ability.name == "Blueprint" then return foo(i + 1)
 						elseif G.jokers.cards[i].ability.name == "Brainstorm" then return foo(1)
